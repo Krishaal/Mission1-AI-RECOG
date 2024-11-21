@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Image for Prediction</title>
+</head>
+<body>
+  <h1>Upload an Image for Prediction</h1>
+
+  <!-- Image Upload Form -->
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="imageFile" name="image" accept="image/*" required>
+    <button type="submit">Upload and Predict</button>
+  </form>
+
+  <h2>Prediction Results</h2>
+  <pre id="predictionResults"></pre>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const predictionResults = document.getElementById('predictionResults');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Create a FormData object and append the selected file
+      const formData = new FormData();
+      const fileInput = document.getElementById('imageFile');
+      formData.append('image', fileInput.files[0]);
+
+      // Send the form data to the backend for processing
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        // Display the prediction results in the <pre> tag
+        predictionResults.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        console.error('Error uploading the image:', error);
+        predictionResults.textContent = 'Error uploading the image';
+      }
+    });
+  </script>
+</body>
+</html>
